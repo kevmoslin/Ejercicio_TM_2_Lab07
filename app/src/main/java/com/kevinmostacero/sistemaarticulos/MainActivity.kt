@@ -7,11 +7,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.kevinmostacero.sistemaarticulos.model.Articulo
+import com.kevinmostacero.sistemaarticulos.repository.ArticuloRepository
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var db: AppDatabase
+    private lateinit var repository: ArticuloRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -23,25 +24,31 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(texto)
 
-        db = AppDatabase.getDatabase(this)
+        val dao =
+            AppDatabase
+                .getDatabase(this)
+                .articuloDao()
+
+        repository =
+            ArticuloRepository(dao)
 
         lifecycleScope.launch {
 
-            db.articuloDao().insertar(
+            repository.insertar(
 
                 Articulo(
-                    nombre = "Monitor",
-                    descripcion = "Monitor Samsung",
-                    precio = 900.0
+                    nombre = "Laptop",
+                    descripcion = "Laptop HP",
+                    precio = 3500.0
                 )
             )
 
-            db.articuloDao().insertar(
+            repository.insertar(
 
                 Articulo(
-                    nombre = "Mouse",
-                    descripcion = "Mouse gamer",
-                    precio = 120.0
+                    nombre = "Auriculares",
+                    descripcion = "Auriculares Bluetooth",
+                    precio = 180.0
                 )
             )
         }
@@ -52,17 +59,18 @@ class MainActivity : AppCompatActivity() {
                 Lifecycle.State.STARTED
             ) {
 
-                db.articuloDao()
+                repository
                     .listarTodos()
                     .collect { lista ->
 
-                        texto.text = lista.joinToString("\n\n") {
+                        texto.text =
+                            lista.joinToString("\n\n") {
 
-                            "ID: ${it.id}\n" +
-                                    "Nombre: ${it.nombre}\n" +
-                                    "Descripción: ${it.descripcion}\n" +
-                                    "Precio: S/ ${it.precio}"
-                        }
+                                "ID: ${it.id}\n" +
+                                        "Nombre: ${it.nombre}\n" +
+                                        "Descripción: ${it.descripcion}\n" +
+                                        "Precio: S/ ${it.precio}"
+                            }
                     }
             }
         }
