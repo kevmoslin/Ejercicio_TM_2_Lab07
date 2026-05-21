@@ -35,9 +35,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+
+        sourceCompatibility = JavaVersion.VERSION_21
+
+        targetCompatibility = JavaVersion.VERSION_21
     }
+
+    kotlinOptions {
+
+        jvmTarget = "21"
+    }
+
     buildFeatures {
         viewBinding = true
     }
@@ -54,7 +62,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-    val roomVersion = "2.6.1"
+    val roomVersion = "2.7.0"
 
     implementation("androidx.room:room-runtime:$roomVersion")
 
