@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.kevinmostacero.sistemaarticulos.model.Articulo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArticuloDao {
@@ -26,5 +27,5 @@ interface ArticuloDao {
     )
 
     @Query("SELECT * FROM articulos")
-    suspend fun listarTodos(): List<Articulo>
+    fun listarTodos(): Flow<List<Articulo>>
 }

@@ -3,7 +3,9 @@ package com.kevinmostacero.sistemaarticulos
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.kevinmostacero.sistemaarticulos.model.Articulo
 import kotlinx.coroutines.launch
 
@@ -12,9 +14,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         val texto = TextView(this)
+
+        texto.textSize = 18f
 
         setContentView(texto)
 
@@ -22,38 +27,44 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
 
-            val articulo1 = Articulo(
-                nombre = "Laptop",
-                descripcion = "Lenovo Core i5",
-                precio = 3000.0
-            )
+            db.articuloDao().insertar(
 
-            val articulo2 = Articulo(
-                nombre = "Mouse",
-                descripcion = "Mouse gamer",
-                precio = 80.0
+                Articulo(
+                    nombre = "Monitor",
+                    descripcion = "Monitor Samsung",
+                    precio = 900.0
+                )
             )
 
             db.articuloDao().insertar(
-                articulo1
-            )
 
-            db.articuloDao().insertar(
-                articulo2
+                Articulo(
+                    nombre = "Mouse",
+                    descripcion = "Mouse gamer",
+                    precio = 120.0
+                )
             )
+        }
 
-            val lista =
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(
+                Lifecycle.State.STARTED
+            ) {
+
                 db.articuloDao()
                     .listarTodos()
+                    .collect { lista ->
 
-            texto.text =
-                lista.joinToString("\n\n") {
+                        texto.text = lista.joinToString("\n\n") {
 
-                    "ID: ${it.id}\n" +
-                            "Nombre: ${it.nombre}\n" +
-                            "Descripción: ${it.descripcion}\n" +
-                            "Precio: ${it.precio}"
-                }
+                            "ID: ${it.id}\n" +
+                                    "Nombre: ${it.nombre}\n" +
+                                    "Descripción: ${it.descripcion}\n" +
+                                    "Precio: S/ ${it.precio}"
+                        }
+                    }
+            }
         }
     }
 }
